@@ -9,7 +9,7 @@
             <div class="card transition">
                 <h2 class="transition">@user.FirstName @user.LastName</h2>
                 <p>@user.Email</p>
-                <div class="cta-container transition" onclick="RSACrypto.SendPublicKey(@user.UserID);"><a href="#" class="cta">Message @user.LastName</a></div>
+                <div class="cta-container transition" onclick="location.href='@Url.Action("ChatOn", "Chatboard", new { userId = user.UserID})'"><a href="#" class="cta">Message @user.LastName</a></div>
                 <div class="card_circle transition"></div>
             </div>
         </div>

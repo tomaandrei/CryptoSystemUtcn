@@ -19,5 +19,16 @@ namespace CryptoSystemDissertation.Controllers
                 return View(db.UserAccount.ToList());
             }
         }
+
+        public ActionResult ChatOn(int userId)
+        {
+            using (CryptoDbContext db = new CryptoDbContext())
+            {
+                var user = db.UserAccount.Where(u => u.UserID == userId).FirstOrDefault();
+                ViewBag.User = user;
+                return View();
+            }
+           
+        }
     }
 }

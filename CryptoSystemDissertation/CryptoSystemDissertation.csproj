@@ -233,7 +233,7 @@
     <Content Include="Scripts\require.js" />
     <Content Include="Scripts\respond.js" />
     <Content Include="Scripts\respond.min.js" />
-    <Content Include="Scripts\System\AsymCryptography.js" />
+    <Content Include="Scripts\System\AppModules.js" />
     <Content Include="Scripts\System\System.BigInt.debug.js" />
     <Content Include="Scripts\System\System.BitConverter.debug.js" />
     <Content Include="Scripts\System\System.Convert.debug.js" />
@@ -243,6 +243,7 @@
     <Content Include="Scripts\System\System.Security.Cryptography.RSA.debug.js" />
     <Content Include="Scripts\System\System.Security.Cryptography.SHA1.debug.js" />
     <Content Include="Scripts\System\System.Text.debug.js" />
+    <Content Include="Scripts\xml2json.min.js" />
     <Content Include="Scripts\_references.js" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
@@ -263,6 +264,7 @@
     <Content Include="Views\Account\Login.cshtml" />
     <Content Include="Views\Account\UnauthorizedUser.cshtml" />
     <Content Include="Views\Chatboard\Index.cshtml" />
+    <Content Include="Views\Chatboard\ChatOn.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

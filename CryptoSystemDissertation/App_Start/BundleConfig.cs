@@ -33,7 +33,8 @@ namespace CryptoSystemDissertation
                       "~/Scripts/System/System.Security.Cryptography.SHA1.debug.js",
                       "~/Scripts/System/System.Security.Cryptography.debug.js",
                       "~/Scripts/System/System.Security.Cryptography.RSA.debug.js",
-                      "~/Scripts/System/AsymCryptography.js"));
+                      "~/Scripts/xml2json.min.js",
+                      "~/Scripts/System/AppModules.js"));
 
             bundles.Add(new StyleBundle("~/Content/css").Include(
                       "~/Content/bootstrap.css",
