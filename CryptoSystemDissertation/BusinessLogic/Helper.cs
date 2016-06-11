@@ -2,7 +2,7 @@
 using System.Xml;
 using System.Xml.Serialization;
 
-namespace CryptoSystemDissertation.BussnisLogic
+namespace CryptoSystemDissertation.BusinessLogic
 {
     public class Helper
     {

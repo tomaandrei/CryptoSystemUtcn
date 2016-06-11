@@ -166,9 +166,9 @@
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
-    <Compile Include="BussnisLogic\EncryptParameters.cs" />
-    <Compile Include="BussnisLogic\Helper.cs" />
-    <Compile Include="BussnisLogic\RandomeParameters.cs" />
+    <Compile Include="BusinessLogic\EncryptParameters.cs" />
+    <Compile Include="BusinessLogic\Helper.cs" />
+    <Compile Include="BusinessLogic\RandomParameters.cs" />
     <Compile Include="Common\CryptoAuthorizeAttribute.cs" />
     <Compile Include="Common\SessionKeys.cs" />
     <Compile Include="Common\SessionManager.cs" />
@@ -202,6 +202,8 @@
     <Content Include="Content\Images\ser01.png" />
     <Content Include="Content\Images\ser02.png" />
     <Content Include="Content\Images\ser03.png" />
+    <Content Include="ExternalLibs\CryptoAppActiveControl.dll" />
+    <Content Include="ExternalLibs\registerActiveX.txt" />
     <Content Include="favicon.ico" />
     <Content Include="fonts\fontawesome-webfont.svg" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />

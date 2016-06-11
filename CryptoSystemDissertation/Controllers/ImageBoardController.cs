@@ -1,4 +1,4 @@
-﻿using CryptoSystemDissertation.BussnisLogic;
+﻿using CryptoSystemDissertation.BusinessLogic;
 using CryptoSystemDissertation.Common;
 using CryptoSystemDissertation.Models;
 using Newtonsoft.Json;
@@ -77,7 +77,7 @@ namespace CryptoSystemDissertation.Controllers
             var imageDetails = new ImageDetails();
             using (CryptoDbContext db = new CryptoDbContext())
             {
-                var randome = new RandomeParameters();
+                var randome = new RandomParameters();
                 imageDetails.SenderId = senderId;
                 imageDetails.ReceiverId = receiverId;
                 imageDetails.Parameters = new Parameters

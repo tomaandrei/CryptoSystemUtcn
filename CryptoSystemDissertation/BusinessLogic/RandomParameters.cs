@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 
-namespace CryptoSystemDissertation.BussnisLogic
+namespace CryptoSystemDissertation.BusinessLogic
 {
-    public class RandomeParameters
+    public class RandomParameters
     {
         private Random random = new Random();
 

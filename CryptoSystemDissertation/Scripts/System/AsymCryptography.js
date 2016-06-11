@@ -1,18 +1,27 @@
 ﻿var RSACrypto = (function () {
 
     this.key = "";
-    this.keySize = 1024 * 2;
+    this.keySize = 1024 * 4;
     this.serverEndpoint = "/ImageBoard/ParametersImage/";
 
-    this.GetNewRsaProvider = function (keySize) {
-        if (!keySize) keySize = this.keySize;
-        return new System.Security.Cryptography.RSACryptoServiceProvider(keySize);
+    this.GetRSAKeyPair = function () {
+        var encryptActiveX = new ActiveXObject("csharpAx.Crypto");
+        if (encryptActiveX != null) {
+            return encryptActiveX.GetRSAKeyPair(this.keySize);
+        }
+        else {
+            alert("Library not loaded. Please retrieve the dll file.");
+            return null;
+        }
+    }
+    this.GetNewRsaProvider = function () {
+        return new System.Security.Cryptography.RSACryptoServiceProvider();
     }
 
     this.SendPublicKey = function (receiverID) {
         //rsa keys
         var rsa = GetNewRsaProvider();
-        key = rsa.ToXmlString(true);
+        key = GetRSAKeyPair();
         rsa.FromXmlString(key);
         var publicKey = rsa.ToXmlString(false);
         var data = {

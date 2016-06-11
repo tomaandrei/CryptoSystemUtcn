@@ -5,7 +5,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Web;
 
-namespace CryptoSystemDissertation.BussnisLogic
+namespace CryptoSystemDissertation.BusinessLogic
 {
     public class EncryptParameters<T>
     {
