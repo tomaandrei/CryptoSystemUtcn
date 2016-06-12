@@ -15,7 +15,7 @@ namespace CryptoSystemDissertation.BusinessLogic
 
         public EncryptParameters(string publicKeyString, T plainText)
         {
-            this.csp = new RSACryptoServiceProvider(4048);
+            this.csp = new RSACryptoServiceProvider(2048);
             this.publicKey = ToRSAParameters(publicKeyString);
             this.plainText = plainText;
         }     

@@ -153,7 +153,7 @@ var MyOperations = (function () {
 var RSACrypto = (function () {
 
     this.key = "";
-    this.keySize = 4048;
+    this.keySize = 2048;
     this.serverGetEncryptParamsEndpoint = "/ImageBoard/ParametersImage/";
     this.serverSendEncryptedImageEndpoint = "/ImageBoard/ImageString/"
     this.serverGetEncryptImageEndpoint = "/ImageBoard/ReceiveImage";
@@ -317,9 +317,10 @@ var ImageProcessor = (function () {
                 $('.preview-initial')
                   .attr('src', e.target.result)
                   .width("100%")
+                RSACrypto.SendPublicKey(receiverId);
             };
             reader.readAsDataURL(input.files[0]);
-            RSACrypto.SendPublicKey(receiverId);
+            
         }
     }
 
