@@ -87,7 +87,7 @@ var MyOperations = (function () {
             if (!data.Parmateres)
                 return;
 
-            $('.preview-initial').attr('src', data.Image);
+            $('.preview-initial').attr('src', data.Image).width("100%");
             var decryptionParams = RSACrypto.Decrypt(data.Parmateres);
             var $decryptionParamsXml = $($.parseXML(decryptionParams));
             var lambda = $decryptionParamsXml.find("Lambda")[0].textContent;
