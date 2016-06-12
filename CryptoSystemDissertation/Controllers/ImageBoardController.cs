@@ -94,7 +94,7 @@ namespace CryptoSystemDissertation.Controllers
             return imageDetails;
         }
 
-        [HttpPost]
+        [HttpGet]
         public ActionResult ReceiveImage()
         {
             var crtUser = SessionManager.ReturnSessionObject("User") as UserAccount;
@@ -103,7 +103,7 @@ namespace CryptoSystemDissertation.Controllers
                 using (CryptoDbContext db = new CryptoDbContext())
                 {
                     var images = db.ImageDetails.Where(r => r.ReceiverId == crtUser.UserID.ToString());
-                    if (images != null)
+                    if (images != null && images.Any())
                     {
                         var imageId = new List<string>();
                         var senderId = new List<string>();
@@ -119,13 +119,18 @@ namespace CryptoSystemDissertation.Controllers
                         return Json(new
                         {
                             SenderName = senderName,
-                            SenderId = senderName,
+                            SenderId = senderId,
                             ImageId = imageId
-                        });
+                        }, JsonRequestBehavior.AllowGet);
                     }
                     else
                     {
-                        return Json(new { message = "No image" });
+                        return Json(new
+                        {
+                            SenderName = String.Empty,
+                            SenderId = String.Empty,
+                            ImageId = String.Empty
+                        }, JsonRequestBehavior.AllowGet);
                     }
                 }
             }
@@ -133,6 +138,13 @@ namespace CryptoSystemDissertation.Controllers
             {
                 return RedirectToAction("Login");
             }
+        }
+
+        public ActionResult GetImageForMe(SendDetails send)
+        {
+            ViewBag.SenderId = send.SenderId;
+            ViewBag.ImageId = send.ImageId;
+            return View();
         }
 
         [HttpPost]

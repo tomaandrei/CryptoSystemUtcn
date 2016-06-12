@@ -250,12 +250,12 @@ i {
     overflow: hidden;
     position: relative;
     top: 72px;
-    width: 260px;
+    width: 210px;
     margin-bottom: 77px;
 }
 .card:hover {
     height: 450px;
-    width: 260px;
+    width: 210px;
 }
 .card:hover .cta-container {
     display: inline;
@@ -283,7 +283,7 @@ i {
     margin-left: -75px;
     margin-top: -270px;
     position: absolute;
-    width: 450px;
+    width: 362px;
 }
 .card h2 {
     color: #3487f7;
@@ -328,7 +328,7 @@ i {
     color: #3487f7;
     display: inline-block;
     font-family: 'Raleway', sans-serif;
-    font-size: 17px;
+    font-size: 12px;
     font-weight: 400;
     height: 36px;
     letter-spacing: 0.5px;
@@ -357,3 +357,39 @@ i {
 .browse-img{
     width:100%;
 }
+
+.registered-users-holder{
+   
+}
+
+.myPictures-holder{
+    max-height:600px;
+    border-left: solid 1px lightgray;
+    overflow:hidden;
+    overflow-y:auto;
+}
+
+   .media
+    {
+        box-shadow:0px 0px 4px -2px #000;
+        margin-bottom:5px;
+        padding:5px;
+    }
+    .dp
+    {
+        border:10px solid #eee;
+        transition: all 0.2s ease-in-out;
+    }
+    .dp:hover
+    {
+        border:2px solid #eee;
+        transform:rotate(360deg);
+        -ms-transform:rotate(360deg);  
+        -webkit-transform:rotate(360deg);  
+        /*-webkit-font-smoothing:antialiased;*/
+    }
+
+    h4 .media-heading {
+        text-transform:uppercase;
+        margin-right:5px;
+    }

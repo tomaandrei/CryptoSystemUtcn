@@ -266,10 +266,10 @@
     <Content Include="Views\Account\UnauthorizedUser.cshtml" />
     <Content Include="Views\Chatboard\Index.cshtml" />
     <Content Include="Views\Chatboard\ChatOn.cshtml" />
+    <Content Include="Views\ImageBoard\GetImageForMe.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Views\ImageBoard\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />

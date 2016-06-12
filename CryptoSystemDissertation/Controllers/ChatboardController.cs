@@ -16,7 +16,10 @@ namespace CryptoSystemDissertation.Controllers
         {
             using (CryptoDbContext db = new CryptoDbContext())
             {
-                return View(db.UserAccount.ToList());
+                var crtUser = SessionManager.ReturnSessionObject("User") as UserAccount;
+                List<UserAccount> registeredUsers = new List<UserAccount>();
+                registeredUsers = db.UserAccount.Where(usr => usr.UserID != crtUser.UserID).ToList();
+                return View(registeredUsers);
             }
         }
 
