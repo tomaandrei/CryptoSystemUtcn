@@ -12,7 +12,6 @@ namespace CryptoSystemDissertation.Controllers
 {
     public class ImageBoardController : Controller
     {
-        private ImageDetails imageDetails;
         // GET: ImageBoard
         public ActionResult Index()
         {
@@ -32,8 +31,8 @@ namespace CryptoSystemDissertation.Controllers
             {
                 if (crtUser != null)
                 {
-                    SetImageDetails(crtUser.UserID.ToString(), senderJson.ReceiverId);
-                    var encryptParameters = new EncryptParameters<Parameters>(senderJson.RSAKeyXML, this.imageDetails.Parameters);
+                    var imageDetails = SetImageDetails(crtUser.UserID.ToString(), senderJson.ReceiverId);
+                    var encryptParameters = new EncryptParameters<Parameters>(senderJson.RSAKeyXML, imageDetails.Parameters);
                     var parameters = encryptParameters.Encrypt();
 
                     return Json(new { encryptParam = parameters });
@@ -52,41 +51,46 @@ namespace CryptoSystemDissertation.Controllers
             var crtUser = SessionManager.ReturnSessionObject("User") as UserAccount;
             if (ModelState.IsValid)
             {
-                if (crtUser != null)
-                {
-                    using (CryptoDbContext db = new CryptoDbContext())
-                    {
-                        if (senderJson.ReceiverId != imageDetails.ReceiverId)
-                        {
-                            this.imageDetails.Image = senderJson.Image;
-                            db.ImageDetails.Add(this.imageDetails);
-                            db.SaveChanges();
-                            ViewBag.Message = "The image was successfully add in Database!";
-                        }
-                    }
-                }
-                else
+                if (crtUser == null)
                 {
                     return RedirectToAction("Login");
+                }
+                using (CryptoDbContext db = new CryptoDbContext())
+                {
+                    var imageDetails = db.ImageDetails.Where(i => i.SenderId == crtUser.UserID.ToString() && i.ReceiverId == senderJson.ReceiverId).FirstOrDefault();
+                    if (imageDetails == null)
+                    {
+                        ViewBag.Message = "Error something was wrong!";
+                        return null;
+                    }
+                    imageDetails.Image = senderJson.Image;
+                    db.SaveChanges();
+                    ViewBag.Message = "The image was successfully add in Database!";    
                 }
             }
             return View();
         }
 
-        private void SetImageDetails(string senderId, string receiverId)
+        private ImageDetails SetImageDetails(string senderId, string receiverId)
         {
-            this.imageDetails = new ImageDetails();
+            var imageDetails = new ImageDetails();
 
-            var randome = new RandomParameters();
-            imageDetails.SenderId = senderId;
-            imageDetails.ReceiverId = receiverId;
-            imageDetails.Parameters = new Parameters
+            using (CryptoDbContext db = new CryptoDbContext())
             {
-                ParamtersId = int.Parse(senderId),
-                Lambda = randome.GenerateLambdaRandomNumber(),
-                X = randome.GenerateXRandomNumber()
-            };
-            imageDetails.Image = null;
+                var randome = new RandomParameters();
+                imageDetails.SenderId = senderId;
+                imageDetails.ReceiverId = receiverId;
+                imageDetails.Parameters = new Parameters
+                {
+                    ParamtersId = int.Parse(senderId),
+                    Lambda = randome.GenerateLambdaRandomNumber(),
+                    X = randome.GenerateXRandomNumber()
+                };
+                imageDetails.Image = null;
+                db.ImageDetails.Add(imageDetails);
+                db.SaveChanges();
+            }
+            return imageDetails;
         }
 
         [HttpPost]
