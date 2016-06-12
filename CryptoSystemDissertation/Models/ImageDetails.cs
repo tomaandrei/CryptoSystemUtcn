@@ -1,12 +1,11 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System;
 
 namespace CryptoSystemDissertation.Models
 {
     public class ImageDetails
     {
         [Key]
-        public int ImageID { get; set; }
-
         public string SenderId { get; set; }
 
         public string ReceiverId { get; set; }

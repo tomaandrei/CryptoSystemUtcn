@@ -82,7 +82,6 @@ namespace CryptoSystemDissertation.Controllers
                 imageDetails.ReceiverId = receiverId;
                 imageDetails.Parameters = new Parameters
                 {
-                    ParamtersId = int.Parse(senderId),
                     Lambda = randome.GenerateLambdaRandomNumber(),
                     X = randome.GenerateXRandomNumber()
                 };
