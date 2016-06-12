@@ -6,6 +6,7 @@ namespace CryptoSystemDissertation.Models
     public class ImageDetails
     {
         [Key]
+        public string ImageId { get; set; }
         public string SenderId { get; set; }
 
         public string ReceiverId { get; set; }

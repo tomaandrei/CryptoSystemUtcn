@@ -182,6 +182,7 @@
     <Compile Include="Models\CryptoDbContext.cs" />
     <Compile Include="Models\ImageDetails.cs" />
     <Compile Include="Models\Parameters.cs" />
+    <Compile Include="Models\SendDetails.cs" />
     <Compile Include="Models\Sender.cs" />
     <Compile Include="Models\UserAccount.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

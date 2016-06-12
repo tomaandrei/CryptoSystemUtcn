@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using System.Web.Helpers;
 using System.Web.Mvc;
 
 namespace CryptoSystemDissertation.Controllers
@@ -65,7 +66,7 @@ namespace CryptoSystemDissertation.Controllers
                     }
                     imageDetails.Image = senderJson.Image;
                     db.SaveChanges();
-                    ViewBag.Message = "The image was successfully add in Database!";    
+                    ViewBag.Message = "The image was successfully add in Database!";
                 }
             }
             return View();
@@ -86,6 +87,7 @@ namespace CryptoSystemDissertation.Controllers
                     X = randome.GenerateXRandomNumber()
                 };
                 imageDetails.Image = null;
+                imageDetails.ImageId = Guid.NewGuid().ToString();
                 db.ImageDetails.Add(imageDetails);
                 db.SaveChanges();
             }
@@ -100,10 +102,26 @@ namespace CryptoSystemDissertation.Controllers
             {
                 using (CryptoDbContext db = new CryptoDbContext())
                 {
-                    var receive = db.ImageDetails.Where(r => r.ReceiverId == crtUser.UserID.ToString()).FirstOrDefault();
-                    if (receive != null)
+                    var images = db.ImageDetails.Where(r => r.ReceiverId == crtUser.UserID.ToString());
+                    if (images != null)
                     {
-                        return Json(new { message = "You have an image" });
+                        var imageId = new List<string>();
+                        var senderId = new List<string>();
+                        var senderName = new List<string>();
+                        foreach (var image in images)
+                        {
+                            imageId.Add(image.ImageId.ToString());
+                            senderId.Add(image.SenderId);
+                            var user = db.UserAccount.Where(u => u.UserID.ToString() == image.SenderId).FirstOrDefault();
+                            senderName.Add(user.FirstName + " " + user.LastName);
+
+                        }
+                        return Json(new
+                        {
+                            SenderName = senderName,
+                            SenderId = senderName,
+                            ImageId = imageId
+                        });
                     }
                     else
                     {
@@ -118,21 +136,23 @@ namespace CryptoSystemDissertation.Controllers
         }
 
         [HttpPost]
-        public ActionResult ReceiveImage(Sender sender)
+        public ActionResult ReceiveImage(SendDetails send)
         {
             var crtUser = SessionManager.ReturnSessionObject("User") as UserAccount;
             if (crtUser != null)
             {
                 using (CryptoDbContext db = new CryptoDbContext())
                 {
-                    var receive = db.ImageDetails.Where(r => r.ReceiverId == crtUser.UserID.ToString()).FirstOrDefault();
-                    if(receive!=null)
+                    var image = db.ImageDetails.Find(send.ImageId);
+                    if (image != null)
                     {
-                        var encryptParameters = new EncryptParameters<Parameters>(sender.RSAKeyXML, receive.Parameters);
+                        var imagesAndParameters = new List<string>();
+                        var encryptParameters = new EncryptParameters<Parameters>(send.RSAKey, image.Parameters);
                         var parameters = encryptParameters.Encrypt();
-                        db.ImageDetails.Remove(receive);
+                        db.ImageDetails.Remove(image);
                         db.SaveChanges();
-                        return Json(new { Parameters = parameters, EncryptImage = receive.Image });
+
+                        return Json(new { Image = image.Image, Parmateres = parameters });
                     }
                     else
                     {
@@ -144,6 +164,6 @@ namespace CryptoSystemDissertation.Controllers
             {
                 return RedirectToAction("Login");
             }
-        } 
+        }         
     }
 }
