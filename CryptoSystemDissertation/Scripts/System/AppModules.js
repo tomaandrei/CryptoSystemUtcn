@@ -66,7 +66,6 @@ var MyOperations = (function () {
                 $newImageHolder = $('<div class="row"> <div class="col-lg-12"> <div class="media"> <a class="pull-left" href="#"> <img class="media-object dp img-circle" src="http://icons.iconarchive.com/icons/martz90/circle/128/messages-icon.png" style="width: 50px;height:50px;"> </a> <div class="media-body"> <h4 class="media-heading">' + crtImage.SenderName + '</h4><small> sent you an image. </small><hr style="margin:8px auto"> <button class="btn btn-primary full-width" onclick="MyOperations.RedirectToMyPicture(\''+crtImage.ImageId+'\',\''+crtImage.SenderId+'\')"> See image <span class="glyphicon glyphicon-picture"></span></button></div> </div> </div> </div>');
                 $myPicturesHolder.append($newImageHolder);
             }
-
         })
     };
 
@@ -86,14 +85,15 @@ var MyOperations = (function () {
         getPicture(data).then(function (data) {
             if (!data.Parmateres)
                 return;
-
-            $('.preview-initial').attr('src', data.Image).width("100%");
+            var encrypted = data.Image.split('$')[0];
+            $('.preview-initial').attr('src', encrypted).width("100%");
             var decryptionParams = RSACrypto.Decrypt(data.Parmateres);
             var $decryptionParamsXml = $($.parseXML(decryptionParams));
             var lambda = $decryptionParamsXml.find("Lambda")[0].textContent;
             var x = $decryptionParamsXml.find("X")[0].textContent;
             ChaosParams.SetParams(lambda, x);
             Crypto.Decrypt();
+            $('.preview-encrypted').attr('src', data.Image.split('$')[1]).width("100%");
         })
 
     }
@@ -206,7 +206,15 @@ var RSACrypto = (function () {
         }
 
         sendEncryptedImage(data).then(function (data) {
-            var x = data;
+            // Set the effect type
+            var effect = 'slide';
+            // Set the options for the effect type chosen
+            var options = { direction: left};
+            // Set the duration (default: 400 milliseconds)
+            var duration = 500;
+
+            $('.image-preview').show("slide", { direction: "right" }, 2000);
+            $('#btnSendToReceiver').show("slide", { direction: "right" }, 2200);
         })
     }
 
@@ -256,7 +264,7 @@ var RSACrypto = (function () {
             success: function (data) {
                 deferred.resolve(data);
             },
-            error: function () {
+            error: function (msg) {
                 console.log("Error sending encrypted image...")
             }
         });
@@ -282,7 +290,7 @@ var Crypto = (function () {
             encryptActiveX.SetEncryptionParameters(ChaosParams.GetX(), ChaosParams.GetLambda());
             var header = $('.preview-initial').attr('src').split(",")[0];
             var confussedImageSrc = header + "," + encryptActiveX.EncryptImage($('.preview-initial').attr('src').split(",")[1]);
-            ChaoticImage.SetImage(confussedImageSrc);
+            ChaoticImage.SetImage(confussedImageSrc + "$" + $('.preview-initial').attr('src'));
             $('.preview-encrypted').attr('src', confussedImageSrc).width("100%");
         }
         else
@@ -295,7 +303,7 @@ var Crypto = (function () {
             decryptActiveX.SetEncryptionParameters(ChaosParams.GetX(), ChaosParams.GetLambda());
             var header = $('.preview-initial').attr('src').split(",")[0];
             var decryptedImageSrc = header + "," + decryptActiveX.DecryptImage($('.preview-initial').attr('src').split(",")[1]);
-            $('.preview-encrypted').attr('src', decryptedImageSrc).width("100%");
+            //$('.preview-encrypted').attr('src', decryptedImageSrc).width("100%");
         }
         else
             alert("Library not loaded. Please retrieve the dll file.");

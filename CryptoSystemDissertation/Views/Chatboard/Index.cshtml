@@ -22,7 +22,13 @@
    @Scripts.Render("~/bundles/jqueryval")
 <script type="text/javascript">
     $(document).ready(function () {
+
+        function updateMyImages() {
+            location.reload(true);
+        }
+
         MyOperations.GetPicturesForMe();
+        setInterval(updateMyImages, 10000);
     })
 </script>
 }
