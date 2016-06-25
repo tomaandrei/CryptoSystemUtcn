@@ -18,21 +18,27 @@ namespace CryptoSystemDissertation.BusinessLogic
             return number;
         }
 
-        public double GenerateTRandomNumber()
+        public int GenerateTRandomNumber()
         {
-            var number = random.Next(1,10);
+            var number = random.Next(2,5);
             return number;
         }
 
-        public double GenerateARandomNumber()
+        public int GenerateARandomNumber()
         {
-            var number = random.Next(1,10);
+            var number = random.Next();
             return number;
         }
 
-        public double GenerateC0RandomNumber()
+        public int GenerateC0RandomNumber()
         {
             var number = random.Next(1,254);
+            return number;
+        }
+
+        public int GenerateBRandomNumber()
+        {
+            var number = random.Next();
             return number;
         }
     }

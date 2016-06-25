@@ -4,9 +4,10 @@
     {
         public double Lambda { get; set; }
         public double X { get; set; }
-        public double T { get; set; }
-        public double A { get; set; }
-        public double C0 { get; set; }
+        public int T { get; set; }
+        public int A { get; set; }
+        public int B { get; set; }
+        public int C0 { get; set; }
                   
     }
 }

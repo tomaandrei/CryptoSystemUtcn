@@ -202,7 +202,8 @@ namespace CryptoSystemDissertation.Controllers
                 X = random.GenerateXRandomNumber(),
                 T = random.GenerateTRandomNumber(),
                 A = random.GenerateARandomNumber(),
-                C0 = random.GenerateTRandomNumber()
+                C0 = random.GenerateTRandomNumber(),
+                B = random.GenerateBRandomNumber()
             };
 
             return parameters;
