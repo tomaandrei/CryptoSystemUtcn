@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using System;
 
 namespace CryptoSystemDissertation.Models
 {
@@ -7,12 +6,15 @@ namespace CryptoSystemDissertation.Models
     {
         [Key]
         public string ImageId { get; set; }
+
         public string SenderId { get; set; }
 
         public string ReceiverId { get; set; }
 
         public string Image { get; set; }
 
-        public Parameters Parameters { get; set; }
+        public string Parameters { get; set; }
+
+        public byte[] IVAes { get; set; }
     }
 }

@@ -1,19 +1,17 @@
 ﻿using CryptoSystemDissertation.BusinessLogic;
 using CryptoSystemDissertation.Common;
 using CryptoSystemDissertation.Models;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
-using System.Web.Helpers;
 using System.Web.Mvc;
 
 namespace CryptoSystemDissertation.Controllers
 {
     public class ImageBoardController : Controller
     {
-        // GET: ImageBoard
+        // GET: ImageBoard     
+
         public ActionResult Index()
         {
             return View();
@@ -25,7 +23,7 @@ namespace CryptoSystemDissertation.Controllers
         }
 
         [HttpPost]
-        public ActionResult ParametersImage(Sender senderJson)
+        public ActionResult ParametersImage(SendDetails senderJson)
         {
             var crtUser = SessionManager.ReturnSessionObject("User") as UserAccount;
             if (ModelState.IsValid)
@@ -33,10 +31,9 @@ namespace CryptoSystemDissertation.Controllers
                 if (crtUser != null)
                 {
                     var imageDetails = SetImageDetails(crtUser.UserID.ToString(), senderJson.ReceiverId);
-                    var encryptParameters = new EncryptParameters<Parameters>(senderJson.RSAKeyXML, imageDetails.Parameters);
-                    var parameters = encryptParameters.Encrypt();
+                    var parameters = this.GetEncryptParameters(imageDetails, senderJson.RSAKey);
 
-                    return Json(new { encryptParam = parameters });
+                    return Json(new { encryptParam = parameters, imageDetails.ImageId });
                 }
                 else
                 {
@@ -47,7 +44,7 @@ namespace CryptoSystemDissertation.Controllers
         }
 
         [HttpPost]
-        public ActionResult ImageString(Sender senderJson)
+        public ActionResult ImageString(SendDetails senderJson)
         {
             var crtUser = SessionManager.ReturnSessionObject("User") as UserAccount;
             if (ModelState.IsValid)
@@ -57,8 +54,8 @@ namespace CryptoSystemDissertation.Controllers
                     return RedirectToAction("Login");
                 }
                 using (CryptoDbContext db = new CryptoDbContext())
-                {
-                    var imageDetails = db.ImageDetails.Where(i => i.SenderId == crtUser.UserID.ToString() && i.ReceiverId == senderJson.ReceiverId).FirstOrDefault();
+                {   
+                    var imageDetails = db.ImageDetails.Find(senderJson.ImageId);
                     if (imageDetails == null)
                     {
                         ViewBag.Message = "Error something was wrong!";
@@ -76,16 +73,16 @@ namespace CryptoSystemDissertation.Controllers
         {
             var imageDetails = new ImageDetails();
 
+            var aesEncrypt = new AESEncryption<Parameters>(SetParameters());
+            var IV = aesEncrypt.GenerateAesKeys();
+            var encryptParameters = aesEncrypt.EncryptAES();
+
             using (CryptoDbContext db = new CryptoDbContext())
-            {
-                var randome = new RandomParameters();
+            {              
                 imageDetails.SenderId = senderId;
                 imageDetails.ReceiverId = receiverId;
-                imageDetails.Parameters = new Parameters
-                {
-                    Lambda = randome.GenerateLambdaRandomNumber(),
-                    X = randome.GenerateXRandomNumber()
-                };
+                imageDetails.Parameters = encryptParameters;
+                imageDetails.IVAes = IV;
                 imageDetails.Image = null;
                 imageDetails.ImageId = Guid.NewGuid().ToString();
                 db.ImageDetails.Add(imageDetails);
@@ -110,10 +107,17 @@ namespace CryptoSystemDissertation.Controllers
                         var senderName = new List<string>();
                         foreach (var image in images)
                         {
-                            imageId.Add(image.ImageId.ToString());
-                            senderId.Add(image.SenderId);
-                            var user = db.UserAccount.Where(u => u.UserID.ToString() == image.SenderId).FirstOrDefault();
-                            senderName.Add(user.FirstName + " " + user.LastName);
+                            if (image.Image != null)
+                            {
+                                imageId.Add(image.ImageId.ToString());
+                                senderId.Add(image.SenderId);
+                                var user = db.UserAccount.Where(u => u.UserID.ToString() == image.SenderId).FirstOrDefault();
+                                senderName.Add(user.FirstName + " " + user.LastName);
+                            }
+                            else
+                            {
+                                db.ImageDetails.Remove(image);
+                            }
 
                         }
                         return Json(new
@@ -144,6 +148,7 @@ namespace CryptoSystemDissertation.Controllers
         {
             ViewBag.SenderId = send.SenderId;
             ViewBag.ImageId = send.ImageId;
+
             return View();
         }
 
@@ -159,8 +164,7 @@ namespace CryptoSystemDissertation.Controllers
                     if (image != null)
                     {
                         var imagesAndParameters = new List<string>();
-                        var encryptParameters = new EncryptParameters<Parameters>(send.RSAKey, image.Parameters);
-                        var parameters = encryptParameters.Encrypt();
+                        var parameters = this.GetEncryptParameters(image, send.RSAKey);
                         db.ImageDetails.Remove(image);
                         db.SaveChanges();
 
@@ -176,6 +180,32 @@ namespace CryptoSystemDissertation.Controllers
             {
                 return RedirectToAction("Login");
             }
-        }         
+        }
+
+        private string GetEncryptParameters(ImageDetails image, string RSAKey)
+        {
+            var aesDecrypt = new AESDecryption<Parameters>(image.Parameters, image.IVAes);
+            var plainParameters = aesDecrypt.DecryptParameters();
+
+            var encryptParameters = new EncryptParameters<Parameters>(RSAKey, plainParameters);
+            var parameters = encryptParameters.Encrypt();
+
+            return parameters;
+        }
+
+        private Parameters SetParameters()
+        {
+            var random = new RandomParameters();
+            var parameters = new Parameters
+            {
+                Lambda = random.GenerateLambdaRandomNumber(),
+                X = random.GenerateXRandomNumber(),
+                T = random.GenerateTRandomNumber(),
+                A = random.GenerateARandomNumber(),
+                C0 = random.GenerateTRandomNumber()
+            };
+
+            return parameters;
+        }       
     }
 }
