@@ -1,24 +1,52 @@
 ﻿var ChaosParams = (function () {
     this.lambda = "";
-    this.x = "";
+    this.x0 = "";
+    this.c0 = "";
+    this.t = "";
+    this.a = "";
+    this.b = "";
 
-    this.SetParams = function (lambda, x) {
+    this.SetParams = function (lambda, x0, c0, t, a, b) {
         ChaosParams.lambda = lambda;
-        ChaosParams.x = x;
+        ChaosParams.x0 = x0;
+        ChaosParams.c0 = c0;
+        ChaosParams.t = t;
+        ChaosParams.a = a;
+        ChaosParams.b = b;
     }
 
     this.GetLambda = function () {
         return ChaosParams.lambda;
     }
 
-    this.GetX = function () {
-        return ChaosParams.x;
+    this.GetX0 = function () {
+        return ChaosParams.x0;
+    }
+
+    this.GetC0 = function () {
+        return ChaosParams.c0;
+    }
+
+    this.GetT = function () {
+        return ChaosParams.t;
+    }
+
+    this.GetA = function () {
+        return ChaosParams.a;
+    }
+
+    this.GetB = function () {
+        return ChaosParams.b;
     }
 
     return {
         SetParams: SetParams,
         GetLambda: GetLambda,
-        GetX:GetX
+        GetX0: GetX0,
+        GetC0: GetC0,
+        GetT: GetT,
+        GetA: GetA,
+        GetB:GetB
     }
 
 }());
@@ -26,6 +54,15 @@
 var ChaoticImage = (function () {
 
     this.chaoticImage = "";
+    this.chaoticImageId = "";
+
+    this.SetImageId = function (id) {
+        ChaoticImage.chaoticImageId = id;
+    }
+
+    this.GetImageId = function () {
+        return ChaoticImage.chaoticImageId;
+    }
 
     this.SetImage = function (imageData) {
         ChaoticImage.chaoticImage = imageData;
@@ -37,7 +74,9 @@ var ChaoticImage = (function () {
 
     return {
         SetImage: SetImage,
-        GetImage: GetImage
+        GetImage: GetImage,
+        SetImageId: SetImageId,
+        GetImageId: GetImageId
     }
 }());
 
@@ -86,13 +125,20 @@ var MyOperations = (function () {
             if (!data.Parmateres)
                 return;
             var encrypted = data.Image.split('$')[0];
-            $('.preview-initial').attr('src', encrypted).width("100%");
+            +$('.preview-initial').attr('src', encrypted).width("100%");
             var decryptionParams = RSACrypto.Decrypt(data.Parmateres);
             var $decryptionParamsXml = $($.parseXML(decryptionParams));
             var lambda = $decryptionParamsXml.find("Lambda")[0].textContent;
-            var x = $decryptionParamsXml.find("X")[0].textContent;
-            ChaosParams.SetParams(lambda, x);
+            var x0 = $decryptionParamsXml.find("X")[0].textContent;
+            var c0 = $decryptionParamsXml.find("C0")[0].textContent;
+            var t = $decryptionParamsXml.find("T")[0].textContent;
+            var a = $decryptionParamsXml.find("A")[0].textContent;
+            var b = $decryptionParamsXml.find("B")[0].textContent;
+            ChaosParams.SetParams(lambda, x0, c0, t, a, b);
+            var startdecrypt = +new Date();
             Crypto.Decrypt();
+            var enddecrypt = +new Date();
+            console.log("Decrypt" + (enddecrypt - startdecrypt));
             $('.preview-encrypted').attr('src', data.Image.split('$')[1]).width("100%");
         })
 
@@ -153,7 +199,7 @@ var MyOperations = (function () {
 var RSACrypto = (function () {
 
     this.key = "";
-    this.keySize = 2048;
+    this.keySize = 2048*2;
     this.serverGetEncryptParamsEndpoint = "/ImageBoard/ParametersImage/";
     this.serverSendEncryptedImageEndpoint = "/ImageBoard/ImageString/"
     this.serverGetEncryptImageEndpoint = "/ImageBoard/ReceiveImage";
@@ -175,25 +221,36 @@ var RSACrypto = (function () {
     this.SendPublicKey = function (receiverID) {
         //rsa keys
         var rsa = GetNewRsaProvider();
+        var startrsa = +new Date();
         key = GetRSAKeyPair();
+        var endrsa = +new Date();
+        console.log("RSA time: " + (endrsa - startrsa));
         rsa.FromXmlString(key);
         var publicKey = rsa.ToXmlString(false);
         var data = {
                 ReceiverId: receiverID,
                 Image: "",
-                RSAKeyXML: publicKey
+                RSAKey: publicKey
         }
 
         getEncryptedParams(data).then(function (data) {
-            if (!data.encryptParam)
+            if (!data.encryptParam && !data.ImageId)
                 return;
 
+            ChaoticImage.SetImageId(data.ImageId);
             var encryptionParams = Decrypt(data.encryptParam);
             var $encryptionParamsXml = $($.parseXML(encryptionParams));
             var lambda = $encryptionParamsXml.find("Lambda")[0].textContent;
-            var x = $encryptionParamsXml.find("X")[0].textContent;
-            ChaosParams.SetParams(lambda, x);
+            var x0 = $encryptionParamsXml.find("X")[0].textContent;
+            var c0 = $encryptionParamsXml.find("C0")[0].textContent;
+            var t = $encryptionParamsXml.find("T")[0].textContent;
+            var a = $encryptionParamsXml.find("A")[0].textContent;
+            var b = $encryptionParamsXml.find("B")[0].textContent;
+            ChaosParams.SetParams(lambda, x0, c0, t, a, b);
+            var startencrypt = +new Date();
             Crypto.Encrypt();
+            var endencrypt = +new Date();
+            console.log("Encryption time:" + (endencrypt - startencrypt));
             $("#btnSendToReceiver").removeClass("hidden");
         })
     }
@@ -202,7 +259,8 @@ var RSACrypto = (function () {
         var data = {
             ReceiverId: receiverID,
             Image: ChaoticImage.GetImage(),
-            RSAKeyXML: ""
+            ImageId: ChaoticImage.GetImageId(),
+            RSAKey: ""
         }
 
         sendEncryptedImage(data).then(function (data) {
@@ -287,7 +345,7 @@ var Crypto = (function () {
 
         var encryptActiveX = new ActiveXObject("csharpAx.Crypto");
         if (encryptActiveX != null) {
-            encryptActiveX.SetEncryptionParameters(ChaosParams.GetX(), ChaosParams.GetLambda());
+            encryptActiveX.SetEncryptionParameters(ChaosParams.GetX0(), ChaosParams.GetLambda(), ChaosParams.GetC0(), ChaosParams.GetT(), ChaosParams.GetA(), ChaosParams.GetB());
             var header = $('.preview-initial').attr('src').split(",")[0];
             var confussedImageSrc = header + "," + encryptActiveX.EncryptImage($('.preview-initial').attr('src').split(",")[1]);
             ChaoticImage.SetImage(confussedImageSrc + "$" + $('.preview-initial').attr('src'));
@@ -300,7 +358,7 @@ var Crypto = (function () {
     var Decrypt = function (e) {
         var decryptActiveX = new ActiveXObject("csharpAx.Crypto");
         if (decryptActiveX != null) {
-            decryptActiveX.SetEncryptionParameters(ChaosParams.GetX(), ChaosParams.GetLambda());
+            decryptActiveX.SetEncryptionParameters(ChaosParams.GetX0(), ChaosParams.GetLambda(), ChaosParams.GetC0(), ChaosParams.GetT(), ChaosParams.GetA(), ChaosParams.GetB());
             var header = $('.preview-initial').attr('src').split(",")[0];
             var decryptedImageSrc = header + "," + decryptActiveX.DecryptImage($('.preview-initial').attr('src').split(",")[1]);
             //$('.preview-encrypted').attr('src', decryptedImageSrc).width("100%");
