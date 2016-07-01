@@ -168,7 +168,7 @@
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="BusinessLogic\AESDecryption.cs" />
     <Compile Include="BusinessLogic\AESEncryption.cs" />
-    <Compile Include="BusinessLogic\EncryptParameters.cs" />
+    <Compile Include="BusinessLogic\RSAEncryptParameters.cs" />
     <Compile Include="BusinessLogic\Helper.cs" />
     <Compile Include="BusinessLogic\RandomParameters.cs" />
     <Compile Include="Common\CryptoAuthorizeAttribute.cs" />

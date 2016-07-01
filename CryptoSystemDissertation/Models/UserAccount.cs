@@ -26,8 +26,6 @@ namespace CryptoSystemDissertation.Models
 
         [Compare("Password", ErrorMessage = "Please confirm you passowrd")]
         [DataType(DataType.Password)]
-        public string ConfirmPassword { get; set; }
-
-        public bool Checked { get; set; }
+        public string ConfirmPassword { get; set; } 
     }
 }

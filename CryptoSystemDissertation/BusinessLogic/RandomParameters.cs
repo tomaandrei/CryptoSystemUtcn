@@ -26,7 +26,7 @@ namespace CryptoSystemDissertation.BusinessLogic
 
         public int GenerateARandomNumber()
         {
-            var number = random.Next();
+            var number = random.Next(1,100);
             return number;
         }
 
@@ -38,7 +38,7 @@ namespace CryptoSystemDissertation.BusinessLogic
 
         public int GenerateBRandomNumber()
         {
-            var number = random.Next();
+            var number = random.Next(1,100);
             return number;
         }
     }

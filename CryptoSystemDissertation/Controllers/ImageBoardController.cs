@@ -144,7 +144,7 @@ namespace CryptoSystemDissertation.Controllers
             }
         }
 
-        public ActionResult GetImageForMe(SendDetails send)
+        public ActionResult GetImageDetails(SendDetails send)
         {
             ViewBag.SenderId = send.SenderId;
             ViewBag.ImageId = send.ImageId;
@@ -163,7 +163,6 @@ namespace CryptoSystemDissertation.Controllers
                     var image = db.ImageDetails.Find(send.ImageId);
                     if (image != null)
                     {
-                        var imagesAndParameters = new List<string>();
                         var parameters = this.GetEncryptParameters(image, send.RSAKey);
                         db.ImageDetails.Remove(image);
                         db.SaveChanges();
@@ -187,7 +186,7 @@ namespace CryptoSystemDissertation.Controllers
             var aesDecrypt = new AESDecryption<Parameters>(image.Parameters, image.IVAes);
             var plainParameters = aesDecrypt.DecryptParameters();
 
-            var encryptParameters = new EncryptParameters<Parameters>(RSAKey, plainParameters);
+            var encryptParameters = new RSAEncryptParameters<Parameters>(RSAKey, plainParameters);
             var parameters = encryptParameters.Encrypt();
 
             return parameters;

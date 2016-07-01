@@ -4,20 +4,20 @@ using System.Text;
 
 namespace CryptoSystemDissertation.BusinessLogic
 {
-    public class EncryptParameters<T>
+    public class RSAEncryptParameters<T>
     {
         private RSAParameters publicKey;
         private T plainText;
         private RSACryptoServiceProvider csp;
 
-        public EncryptParameters(string publicKeyString, T plainText)
+        public RSAEncryptParameters(string publicKeyString, T plainText)
         {
             this.csp = new RSACryptoServiceProvider(2048*2);
             this.publicKey = ToRSAParameters(publicKeyString);
             this.plainText = plainText;
         }     
 
-        public EncryptParameters(RSAParameters publicKey, T plainText)
+        public RSAEncryptParameters(RSAParameters publicKey, T plainText)
         {
             this.publicKey = publicKey;
             this.plainText = plainText;
