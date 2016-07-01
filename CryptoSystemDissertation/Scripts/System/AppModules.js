@@ -145,7 +145,7 @@ var MyOperations = (function () {
     }
     
     this.RedirectToMyPicture = function (imageId, senderId) {
-        var url = "/ImageBoard/GetImageForMe?ImageId=" + imageId + "&SenderId=" + senderId + "";
+        var url = "/ImageBoard/GetImageDetails?ImageId=" + imageId + "&SenderId=" + senderId + "";
         window.location.href = url;
     }
 

@@ -20,25 +20,25 @@ namespace CryptoSystemDissertation.BusinessLogic
 
         public int GenerateTRandomNumber()
         {
-            var number = random.Next(2,5);
+            var number = 5;
             return number;
         }
 
         public int GenerateARandomNumber()
         {
-            var number = random.Next(1,100);
+            var number = 7;
             return number;
         }
 
         public int GenerateC0RandomNumber()
         {
-            var number = random.Next(1,254);
+            var number = 23;
             return number;
         }
 
         public int GenerateBRandomNumber()
         {
-            var number = random.Next(1,100);
+            var number = 4;
             return number;
         }
     }
