@@ -3,6 +3,7 @@ using CryptoSystemDissertation.Common;
 using CryptoSystemDissertation.Models;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Web.Mvc;
 
@@ -11,6 +12,18 @@ namespace CryptoSystemDissertation.Controllers
     public class ImageBoardController : Controller
     {
         // GET: ImageBoard     
+        private Stopwatch watchSend;
+        private Stopwatch watchReceive;
+        private Stopwatch watchAesEncrypt;
+        private Stopwatch watchAesDecrypt;
+        private Stopwatch watchRsaEncrypt;
+
+        private long AesEncryptTime;
+        private long AesDecryptTime;
+        private long RSAEncryptTime;
+        private long SendImageTime1;
+        private long SendImageTime2;
+        private long ReceiveImageTime;
 
         public ActionResult Index()
         {
@@ -25,6 +38,7 @@ namespace CryptoSystemDissertation.Controllers
         [HttpPost]
         public ActionResult ParametersImage(SendDetails senderJson)
         {
+            watchSend = Stopwatch.StartNew();
             var crtUser = SessionManager.ReturnSessionObject("User") as UserAccount;
             if (ModelState.IsValid)
             {
@@ -32,6 +46,8 @@ namespace CryptoSystemDissertation.Controllers
                 {
                     var imageDetails = SetImageDetails(crtUser.UserID.ToString(), senderJson.ReceiverId);
                     var parameters = this.GetEncryptParameters(imageDetails, senderJson.RSAKey);
+                    watchSend.Stop();
+                    SendImageTime2 = watchSend.ElapsedMilliseconds;
 
                     return Json(new { encryptParam = parameters, imageDetails.ImageId });
                 }
@@ -46,6 +62,9 @@ namespace CryptoSystemDissertation.Controllers
         [HttpPost]
         public ActionResult ImageString(SendDetails senderJson)
         {
+            watchSend = new Stopwatch();
+            watchSend.Start();
+
             var crtUser = SessionManager.ReturnSessionObject("User") as UserAccount;
             if (ModelState.IsValid)
             {
@@ -63,9 +82,13 @@ namespace CryptoSystemDissertation.Controllers
                     }
                     imageDetails.Image = senderJson.Image;
                     db.SaveChanges();
+                    watchSend.Stop();
+                    SendImageTime2 = watchSend.ElapsedMilliseconds;
+
                     ViewBag.Message = "The image was successfully add in Database!";
                 }
             }
+            
             return View();
         }
 
@@ -73,9 +96,15 @@ namespace CryptoSystemDissertation.Controllers
         {
             var imageDetails = new ImageDetails();
 
+            watchAesEncrypt = new Stopwatch();
+            watchAesEncrypt.Start();
+
             var aesEncrypt = new AESEncryption<Parameters>(SetParameters());
             var IV = aesEncrypt.GenerateAesKeys();
             var encryptParameters = aesEncrypt.EncryptAES();
+
+            watchAesEncrypt.Stop();
+            AesEncryptTime = watchAesEncrypt.ElapsedMilliseconds;              
 
             using (CryptoDbContext db = new CryptoDbContext())
             {              
@@ -93,7 +122,7 @@ namespace CryptoSystemDissertation.Controllers
 
         [HttpGet]
         public ActionResult ReceiveImage()
-        {
+        {         
             var crtUser = SessionManager.ReturnSessionObject("User") as UserAccount;
             if (crtUser != null)
             {
@@ -155,6 +184,9 @@ namespace CryptoSystemDissertation.Controllers
         [HttpPost]
         public ActionResult ReceiveImage(SendDetails send)
         {
+            watchReceive = new Stopwatch();
+            watchReceive.Start();
+
             var crtUser = SessionManager.ReturnSessionObject("User") as UserAccount;
             if (crtUser != null)
             {
@@ -166,6 +198,9 @@ namespace CryptoSystemDissertation.Controllers
                         var parameters = this.GetEncryptParameters(image, send.RSAKey);
                         db.ImageDetails.Remove(image);
                         db.SaveChanges();
+
+                        watchReceive.Stop();
+                        ReceiveImageTime = watchReceive.ElapsedMilliseconds;
 
                         return Json(new { Image = image.Image, Parmateres = parameters });
                     }
@@ -183,11 +218,20 @@ namespace CryptoSystemDissertation.Controllers
 
         private string GetEncryptParameters(ImageDetails image, string RSAKey)
         {
+            watchAesDecrypt = Stopwatch.StartNew();
+
             var aesDecrypt = new AESDecryption<Parameters>(image.Parameters, image.IVAes);
             var plainParameters = aesDecrypt.DecryptParameters();
 
+            watchAesDecrypt.Stop();
+            AesDecryptTime = watchAesDecrypt.ElapsedMilliseconds;
+
+            watchRsaEncrypt = Stopwatch.StartNew();
             var encryptParameters = new RSAEncryptParameters<Parameters>(RSAKey, plainParameters);
             var parameters = encryptParameters.Encrypt();
+
+            watchRsaEncrypt.Stop();
+            RSAEncryptTime = watchRsaEncrypt.ElapsedMilliseconds;
 
             return parameters;
         }
