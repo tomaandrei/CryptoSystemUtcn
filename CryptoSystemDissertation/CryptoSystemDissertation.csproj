@@ -178,6 +178,7 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Models\Configuration.cs" />
     <Compile Include="Models\CryptoDbContext.cs" />
     <Compile Include="Models\ImageDetails.cs" />
     <Compile Include="Models\Parameters.cs" />
