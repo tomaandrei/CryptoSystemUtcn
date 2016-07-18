@@ -6,7 +6,9 @@ namespace CryptoSystemDissertation.Models
     {
       protected override void OnModelCreating(DbModelBuilder modelBuilder)
       {
-        Database.SetInitializer<CryptoDbContext>(new MigrateDatabaseToLatestVersion<CryptoDbContext, Configuration>());
+        Database.SetInitializer<CryptoDbContext>(new CreateDatabaseIfNotExists<CryptoDbContext>());
+        modelBuilder.Entity<UserAccount>().ToTable("UserAccounts");
+        modelBuilder.Entity<ImageDetails>().ToTable("ImageDetails");
         base.OnModelCreating(modelBuilder);
       }
 
