@@ -4,6 +4,10 @@ namespace CryptoSystemDissertation.Models
 {
     public class CryptoDbContext : DbContext
     {
+      public CryptoDbContext() : base("CryptoDatabase")
+      {
+      }
+
       protected override void OnModelCreating(DbModelBuilder modelBuilder)
       {
         Database.SetInitializer<CryptoDbContext>(new CreateDatabaseIfNotExists<CryptoDbContext>());
